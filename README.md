@@ -1,6 +1,6 @@
 # Project Proposal
 ## Group 6
-## By Trung Tran, Edison Nguyen, Phuc Nguyen, ...
+## By Trung Tran, Edison Nguyen, and Phuc Nguyen
 
 State the problem/issue to resolve
 Functionality: describe how your solution tackles the issues
