@@ -25,10 +25,10 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+
 public class registerController {
 
-    public void backToLoginPage(ActionEvent event)
-    {
+    public void backToLoginPage(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/loginView.fxml"));
         Parent root = null;
         try {
@@ -36,9 +36,10 @@ public class registerController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Scene scene = new Scene(root,  520, 400);
+        Scene scene = new Scene(root, 520, 400);
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(scene);
         stage.show();
     }
 }
+

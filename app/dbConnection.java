@@ -11,7 +11,8 @@ public class dbConnection {
     {
         String dbName ="db";
         String dbUser ="trungtran1234";
-        String dbPass ="trungtran11300363470";
+
+        String dbPass ="";
         String url = "jdbc:mysql://localhost/" + dbName;
 
         try

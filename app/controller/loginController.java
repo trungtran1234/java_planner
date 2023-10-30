@@ -35,21 +35,16 @@ public class loginController {
     private Label loginMessageLabel;
 
     public void loginButtonAction(ActionEvent event) {
-        if (!usernameTextField.getText().isBlank() && !passwordField.getText().isBlank())
-        {
+        if (!usernameTextField.getText().isBlank() && !passwordField.getText().isBlank()) {
             validateLogin();
-        }
-        else if (usernameTextField.getText().isBlank() && usernameTextField.getText().isBlank()) {
+        } else if (usernameTextField.getText().isBlank() && usernameTextField.getText().isBlank()) {
             loginMessageLabel.setText("Please enter username and password");
-        }
-        else
-        {
+        } else {
             loginMessageLabel.setText("Please enter password");
         }
     }
 
-    public void validateLogin()
-    {
+    public void validateLogin() {
         app.dbConnection connection = new app.dbConnection();
         Connection connectDB = connection.getConnection();
 
@@ -73,8 +68,8 @@ public class loginController {
             e.printStackTrace();
         }
     }
-    public void goToRegisterPage(ActionEvent event)
-    {
+
+    public void goToRegisterPage(ActionEvent event) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/registerView.fxml"));
         Parent root;
         try {
@@ -82,7 +77,7 @@ public class loginController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Scene scene = new Scene(root,  520, 400);
+        Scene scene = new Scene(root, 520, 400);
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(scene);
         stage.show();
