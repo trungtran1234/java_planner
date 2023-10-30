@@ -9,11 +9,10 @@ import javafx.stage.Stage;
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Load the initial view (LoginView.fxml)
+        // Load the initial view (loginView.fxml)
         FXMLLoader loader = new FXMLLoader(getClass().getResource("view/loginView.fxml"));
         Parent root = loader.load();
-        // Configure the primary stage
-        primaryStage.setTitle("Login");
+        primaryStage.setTitle("Co-Planner");
         primaryStage.setScene(new Scene(root, 520, 400));
         primaryStage.show();
     }
