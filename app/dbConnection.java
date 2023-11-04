@@ -9,10 +9,10 @@ public class dbConnection {
 
     public Connection getConnection()
     {
-        String dbName ="db";
-        String dbUser ="trungtran1234";
+        String dbName ="plannerDB";
+        String dbUser ="root";
 
-        String dbPass ="";
+        String dbPass ="admin151";
         String url = "jdbc:mysql://localhost/" + dbName;
 
         try
