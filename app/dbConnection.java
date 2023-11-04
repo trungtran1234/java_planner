@@ -7,13 +7,12 @@ public class dbConnection {
 
     public Connection dbLink;
 
-    public Connection getConnection()
+    public Connection connect()
     {
         String dbName ="plannerDB";
-        String dbUser ="root";
-
-        String dbPass ="admin151";
-        String url = "jdbc:mysql://localhost/" + dbName;
+        String dbUser = System.getenv("DB_USER");
+        String dbPass = System.getenv("DB_PASSWORD");
+        String url = System.getenv("DB_URL") + dbName;
 
         try
         {
@@ -27,5 +26,4 @@ public class dbConnection {
         return dbLink;
     }
 }
-
 

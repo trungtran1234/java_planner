@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
+
+import app.dbConnection;
 public class loginController {
 
     @FXML
@@ -37,39 +40,43 @@ public class loginController {
     public void loginButtonAction(ActionEvent event) {
         if (!usernameTextField.getText().isBlank() && !passwordField.getText().isBlank()) {
             validateLogin();
-        } else if (usernameTextField.getText().isBlank() && usernameTextField.getText().isBlank()) {
+        }
+        else if (usernameTextField.getText().isBlank() && usernameTextField.getText().isBlank()) {
             loginMessageLabel.setText("Please enter username and password");
-        } else {
+        }
+        else
+        {
             loginMessageLabel.setText("Please enter password");
         }
     }
 
-    public void validateLogin() {
-        app.dbConnection connection = new app.dbConnection();
-        Connection connectDB = connection.getConnection();
+    public void validateLogin()
+    {
+        dbConnection connectNow = new dbConnection();
+        Connection connection = connectNow.connect();
 
-        String verifyLogin = "SELECT count(1) FROM user WHERE username = ? AND password = ?";
-
+        String query = "SELECT count(1) FROM users WHERE username = '" +usernameTextField.getText() + "' AND password = '" + passwordField.getText() + "'";
         try {
-            PreparedStatement preparedStatement = connectDB.prepareStatement(verifyLogin);
-            preparedStatement.setString(1, usernameTextField.getText());
-            preparedStatement.setString(2, passwordField.getText());
+            Statement statement = connection.createStatement();
+            ResultSet queryResult = statement.executeQuery(query);
 
-            ResultSet result = preparedStatement.executeQuery();
-
-            while (result.next()) {
-                if (result.getInt(1) == 1) {
-                    loginMessageLabel.setText("Welcome!");
-                } else {
-                    loginMessageLabel.setText("Invalid login");
+            while(queryResult.next())
+            {
+                if (queryResult.getInt(1) == 1)
+                {
+                    loadMainPage();
+                }
+                else
+                {
+                    loginMessageLabel.setText("Invalid login. Please try again.");
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
-    public void goToRegisterPage(ActionEvent event) {
+    public void goToRegisterPage(ActionEvent event)
+    {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/registerView.fxml"));
         Parent root;
         try {
@@ -77,9 +84,21 @@ public class loginController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Scene scene = new Scene(root, 520, 400);
+        Scene scene = new Scene(root,  520, 400);
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void loadMainPage() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/mainpage.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root, 800, 600);
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            stage.setScene(scene);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
