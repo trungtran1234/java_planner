@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
 
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controller.mainpageController">
    <children>
-      <Text layoutX="244.0" layoutY="158.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Collaborative Planner" />
+      <Text layoutX="233.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" />
+      <ChoiceBox id="startTimeSelector" fx:id="startTimeSelector" layoutX="117.0" layoutY="102.0" prefHeight="27.0" prefWidth="49.0" />
+      <Label alignment="CENTER" layoutX="14.0" layoutY="106.0" prefHeight="18.0" prefWidth="97.0" text="start time" />
+      <Label alignment="CENTER" layoutX="25.0" layoutY="143.0" prefHeight="18.0" prefWidth="76.0" text="end time" />
+      <ChoiceBox id="endTimeSelector" fx:id="endTimeSelector" layoutX="117.0" layoutY="139.0" prefHeight="27.0" prefWidth="49.0" />
+      <ChoiceBox id="amOrPmStart" fx:id ="amOrPmStart" layoutX="190.0" layoutY="102.0" prefHeight="27.0" prefWidth="49.0" />
+      <ChoiceBox id="amOrPmEnd" fx:id ="amOrPmEnd"  layoutX="190.0" layoutY="139.0" prefHeight="27.0" prefWidth="49.0" />
+      <ChoiceBox id="dayOfWeek" fx:id ="dayOfWeek" layoutX="115.0" layoutY="179.0" prefHeight="27.0" prefWidth="126.0" />
+      <Label layoutX="28.0" layoutY="184.0" text="day of week" />
+      <Button id="enterScheduleButton" layoutX="114.0" layoutY="222.0" mnemonicParsing="false" text="submit" />
    </children>
 </AnchorPane>
