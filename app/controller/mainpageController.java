@@ -74,8 +74,10 @@ public class mainpageController {
         SpinnerValueFactory<Integer> minuteValues = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 60, 0);
         this.hourSpinner.setValueFactory(hourValues);
         this.minuteSpinner.setValueFactory(minuteValues);
-        this.FromhourSpinner.setValueFactory(hourValues);
-        this.FromminuteSpinner.setValueFactory(minuteValues);
+        SpinnerValueFactory<Integer> fromHourValues = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 12, 1);
+        SpinnerValueFactory<Integer> fromMinuteValues = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 60, 0);
+        this.FromhourSpinner.setValueFactory(fromHourValues);
+        this.FromminuteSpinner.setValueFactory(fromMinuteValues);
 
 
 
