@@ -1,25 +1,22 @@
 package app.controller;
 
+import app.dbConnection;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.event.ActionEvent;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.Label;
-import javafx.stage.Stage;
-import javafx.scene.Scene;
 import javafx.scene.Parent;
-
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
-import app.dbConnection;
 public class loginController {
 
     @FXML
@@ -94,9 +91,13 @@ public class loginController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/mainpage.fxml"));
             Parent root = loader.load();
-            Scene scene = new Scene(root, 800, 600);
-            Stage stage = (Stage) loginButton.getScene().getWindow();
+            Stage stage = new Stage();
+            Scene scene = new Scene(root);
             stage.setScene(scene);
+            stage.setMaximized(true);
+            Stage loginStage = (Stage) loginButton.getScene().getWindow();
+            loginStage.close();
+            stage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
