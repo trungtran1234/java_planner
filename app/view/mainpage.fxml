@@ -17,6 +17,6 @@
       <ChoiceBox id="amOrPmEnd" fx:id ="amOrPmEnd"  layoutX="190.0" layoutY="139.0" prefHeight="27.0" prefWidth="49.0" />
       <ChoiceBox id="dayOfWeek" fx:id ="dayOfWeek" layoutX="115.0" layoutY="179.0" prefHeight="27.0" prefWidth="126.0" />
       <Label layoutX="28.0" layoutY="184.0" text="day of week" />
-      <Button id="enterScheduleButton" layoutX="114.0" layoutY="222.0" mnemonicParsing="false" text="submit" />
+      <Button id="enterScheduleButton" fx:id="enterScheduleButton" layoutX="114.0" layoutY="222.0" onAction="#enterScheduleButtonAction" mnemonicParsing="false" text="submit" />
    </children>
 </AnchorPane>
