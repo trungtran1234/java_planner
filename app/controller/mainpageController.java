@@ -6,9 +6,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -147,11 +144,64 @@ public class mainpageController {
         ScheduleBlock scheduleBlock = new ScheduleBlock(selectedDay, selectedFromHour, selectedFromMinute, selectedFromAmPm, selectedHour, selectedMinute, selectedAmPm, description);
         // Add the schedule block to database
         addToDatabase(scheduleBlock);
-        int columnIndex = determineColumnIndex(selectedDay);
-        int rowIndex = 1;
 
         ScheduleBlockPane scheduleBlockPane = new ScheduleBlockPane(selectedDay, selectedFromHour, selectedFromMinute, selectedFromAmPm, selectedHour, selectedMinute, selectedAmPm, description);
-        gridPane.add(scheduleBlockPane, columnIndex, rowIndex);
+        scheduleBlockPane.addScheduleBlockPane();
+    }
+
+        public void addToDatabase(ScheduleBlock scheduleBlock) {
+        dbConnection connectNow = new dbConnection();
+        Connection connection = connectNow.connect();
+
+        String insertQuery = "INSERT INTO schedules (day, fromHour, fromMinute, fromAmpm, toHour, toMinute, toAmpm, description) VALUES ('" +
+                scheduleBlock.getDay() + "', " +
+                scheduleBlock.getFromHour() + ", " +
+                scheduleBlock.getFromMinute() + ", '" +
+                scheduleBlock.getFromAmPm() + "', " +
+                scheduleBlock.getToHour() + ", " +
+                scheduleBlock.getToMinute() + ", '" +
+                scheduleBlock.getToAmPm() + "', '" +
+                scheduleBlock.getDescription() + "')";
+
+        try {
+            Statement statement = connection.createStatement();
+            int rowsAffected = statement.executeUpdate(insertQuery);
+
+            if (rowsAffected > 0) {
+                this.scheduleLabel.setText("Schedule block added");
+            } else {
+                this.scheduleLabel.setText("Invalid schedule block");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle database-related exceptions
+        }
+    }
+
+
+    public class ScheduleBlockPane extends Pane {
+        private static int columnIndex;
+        private static int rowIndex;
+        private static int rowSpan;
+
+
+
+        public ScheduleBlockPane(String day, int fromHour, int fromMinute, String fromAmPm, int toHour, int toMinute, String toAmPm, String description) {
+            // Create UI elements to display the schedule block information
+            Label descriptionLabel = new Label("Description: " + description);
+
+            // Customize the appearance of the pane
+            setStyle("-fx-background-color: lightblue;");
+            setPrefHeight(80); // Adjust the height as needed
+
+            // Add the UI elements to the pane
+            getChildren().addAll(descriptionLabel);
+            columnIndex = determineColumnIndex(day);
+
+        }
+        public void addScheduleBlockPane(){
+            gridPane.add(this, columnIndex, 1, 1, 5);
+        }
     }
     private int determineColumnIndex(String selectedDay) {
         int columnIndex = 1; // Default value
@@ -180,54 +230,16 @@ public class mainpageController {
         }
         return columnIndex;
     }
-
-    public void addToDatabase(ScheduleBlock scheduleBlock) {
-        dbConnection connectNow = new dbConnection();
-        Connection connection = connectNow.connect();
-
-        String insertQuery = "INSERT INTO schedules (day, fromHour, fromMinute, fromAmpm, toHour, toMinute, toAmpm, description) VALUES ('" +
-                scheduleBlock.getDay() + "', " +
-                scheduleBlock.getFromHour() + ", " +
-                scheduleBlock.getFromMinute() + ", '" +
-                scheduleBlock.getFromAmPm() + "', " +
-                scheduleBlock.getToHour() + ", " +
-                scheduleBlock.getToMinute() + ", '" +
-                scheduleBlock.getToAmPm() + "', '" +
-                scheduleBlock.getDescription() + "')";
-
-        try {
-            Statement statement = connection.createStatement();
-            int rowsAffected = statement.executeUpdate(insertQuery);
-
-            if (rowsAffected > 0) {
-                this.scheduleLabel.setText("Schedule block added");
-            } else {
-                this.scheduleLabel.setText("Invalid schedule block");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Handle database-related exceptions
+    private int calculateRowIndex(int hour, int minute, String amPm) {
+        // Convert the time to a 24-hour format
+        if (amPm.equalsIgnoreCase("PM") && hour != 12) {
+            hour += 12;
+        } else if (amPm.equalsIgnoreCase("AM") && hour == 12) {
+            hour = 0;
         }
-    }
-    public class ScheduleBlockPane extends Pane {
-        public ScheduleBlockPane(String day, int fromHour, int fromMinute, String fromAmPm, int toHour, int toMinute, String toAmPm, String description) {
-            // Create a colored rectangle to represent the schedule block
-            Rectangle block = new Rectangle(145, 50); // Customize the size
-            block.setFill(Color.LIGHTBLUE); // Customize the color
 
-            // Create text labels with schedule information
-            Text timeText = new Text(toHour + ":" + String.format("%02d", toMinute) + " " + toAmPm);
-            Text descriptionText = new Text(description);
-
-            // Set the position of text elements
-            timeText.setLayoutX(10);
-            timeText.setLayoutY(20);
-            descriptionText.setLayoutX(10);
-            descriptionText.setLayoutY(40);
-
-            // Add elements to the custom Pane
-            getChildren().addAll(block, timeText, descriptionText);
-        }
+        // Calculate the row index based on the hour and minute
+        return hour * 4 + minute / 15 + 1; // Assuming 15-minute intervals
     }
 
 }
