@@ -1,0 +1,4 @@
+.pane-border {
+    -fx-border-color: lightblue; /* Or any color you prefer */
+    -fx-border-width: 10px; /* Adjust the width as needed */
+}
