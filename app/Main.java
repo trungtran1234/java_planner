@@ -10,14 +10,17 @@ import java.sql.SQLException;
 import app.dbConnection;
 
 public class Main extends Application {
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Load the initial view (loginView.fxml)
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("view/loginView.fxml"));
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/app/view/mainpage.fxml"));
         Parent root = loader.load();
-        primaryStage.setTitle("Co-Planner");
-        primaryStage.setScene(new Scene(root, 520, 400));
-        primaryStage.show();
+        Stage stage = new Stage();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setMaximized(true);
+        stage.show();
     }
 
     public static void main(String[] args) {
