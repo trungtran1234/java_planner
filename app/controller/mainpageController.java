@@ -9,6 +9,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
 import java.sql.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -38,9 +42,31 @@ public class mainpageController {
     private ComboBox<String> FromamPmBox;
     @FXML
     private ColorPicker colorPicker;
+    @FXML
+    private Label weekLabel;
+    private LocalDate currentDate = LocalDate.now();
+    @FXML
+    private Label mondayLabel;
+    @FXML
+    private Label tuesdayLabel;
+    @FXML
+    private Label wednesdayLabel;
+    @FXML
+    private Label thursdayLabel;
+    @FXML
+    private Label fridayLabel;
+    @FXML
+    private Label saturdayLabel;
+    @FXML
+    private Label sundayLabel;
+    @FXML
+    private Label alertLabel;
 
     public void initialize() throws SQLException {
+
         displaySchedules();
+        updateDateLabels();
+        updateWeekLabel();
         //from
         FromamPmBox.setValue("AM");
         FromamPmBox.setVisibleRowCount(2);
@@ -68,20 +94,16 @@ public class mainpageController {
         dayBox.setEditable(false);
 
         //spinner
-        SpinnerValueFactory<Integer> hourValues = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 12, 1);
-        SpinnerValueFactory<Integer> minuteValues = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 60, 0);
+        SpinnerValueFactory<Integer> hourValues = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 12, 12);
+        SpinnerValueFactory<Integer> minuteValues = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59, 0);
         this.hourSpinner.setValueFactory(hourValues);
         this.minuteSpinner.setValueFactory(minuteValues);
-        SpinnerValueFactory<Integer> fromHourValues = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 12, 1);
-        SpinnerValueFactory<Integer> fromMinuteValues = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 60, 0);
+        SpinnerValueFactory<Integer> fromHourValues = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 12, 7);
+        SpinnerValueFactory<Integer> fromMinuteValues = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59, 0);
         this.FromhourSpinner.setValueFactory(fromHourValues);
         this.FromminuteSpinner.setValueFactory(fromMinuteValues);
 
-        gridPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
-            if (newScene != null) {
-                newScene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
-            }
-        });
+        colorPicker.setValue(Color.LIGHTBLUE);
     }
     public static class ScheduleBlock {
         private final String day;
@@ -119,6 +141,12 @@ public class mainpageController {
         int fromRowIndex = calculateRowIndex(fromTime);
         int toRowIndex = calculateRowIndex(toTime);
 
+        if (fromTime.equals(toTime)) {
+            alertLabel.setText("Invalid Time");
+            return;
+        }
+        alertLabel.setText("");
+
         //backend
         ScheduleBlock scheduleBlock = new ScheduleBlock(selectedDay, fromTime, toTime, description, color);
         addToDatabase(scheduleBlock);
@@ -141,10 +169,40 @@ public class mainpageController {
         }
     }
 
+    private void showAlert(String message) {
+
+    }
+
     private String formatTime(int hour, int minute, String amPm) {
         return String.format("%02d:%02d %s", hour, minute, amPm);
     }
+    private void updateDateLabels() {
+        LocalDate startOfWeek = currentDate.with(DayOfWeek.MONDAY);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd\nEEEE");
 
+        Label[] dayLabels = {mondayLabel, tuesdayLabel, wednesdayLabel, thursdayLabel, fridayLabel, saturdayLabel, sundayLabel};
+        for (int i = 0; i < 7; i++) {
+            LocalDate date = startOfWeek.plusDays(i);
+            dayLabels[i].setText(date.format(formatter));
+        }
+    }
+    private void updateWeekLabel() {
+        LocalDate startOfWeek = currentDate.with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek = currentDate.with(DayOfWeek.SUNDAY);
+        DateTimeFormatter Formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        String formattedDate = startOfWeek.format(Formatter) + " - " + endOfWeek.format(Formatter);
+        weekLabel.setText(formattedDate);
+    }
+    public void prevWeek(ActionEvent event) {
+        currentDate = currentDate.minusWeeks(1);
+        updateWeekLabel();
+        updateDateLabels();
+    }
+    public void nextWeek(ActionEvent event) {
+        currentDate = currentDate.plusWeeks(1);
+        updateWeekLabel();
+        updateDateLabels();
+    }
     public void addToDatabase(ScheduleBlock scheduleBlock) throws SQLException {
         dbConnection connectNow = new dbConnection();
         Connection connection = connectNow.connect();
@@ -168,12 +226,9 @@ public class mainpageController {
         private static int rowSpan;
         private Button deleteButton;
 
-
         public ScheduleBlockPane(String day, String fromTime, String toTime, String description, String color) {
             // Create UI elements to display the schedule block information
-            this.getStyleClass().add("pane-border");
-
-            Label descriptionLabel = new Label("Event: " + description);
+            Label descriptionLabel = new Label("Event: " + description + "\n" + fromTime + " - " + toTime);
             descriptionLabel.setWrapText(true); // Enable text wrapping
             descriptionLabel.setMaxWidth(70);
             descriptionLabel.setLayoutX(5);
@@ -201,15 +256,6 @@ public class mainpageController {
             deleteButton.setStyle("-fx-background-color: lightblue; -fx-text-fill: black;");
             // Add the delete button to the pane
             getChildren().add(deleteButton);
-        }
-
-        private String handleColorChange() {
-            Color selectedColor = colorPicker.getValue();
-
-            return String.format("-fx-background-color: #%02x%02x%02x;",
-                    (int) (selectedColor.getRed() * 255),
-                    (int) (selectedColor.getGreen() * 255),
-                    (int) (selectedColor.getBlue() * 255));
         }
         private void handleDelete(String day, String fromTime, String toTime, String description, String color) throws SQLException {
             // Remove from database
@@ -263,21 +309,26 @@ public class mainpageController {
         } else if (amPm.equalsIgnoreCase("PM")) {
             hour += 12;
         }
+        // Round the minutes to the nearest 15-minute increment
+        if (minute > 50) {
+            minute = 0;
+            hour++;
+        }
+        else
+        {
+            minute = roundToNearest15(minute);
+        }
 
         // Calculate the row index based on the time
         int rowIndex;
         if (hour >= 7 && hour < 12) {
-            // For times between 7:00 AM and 11:45 AM
             rowIndex = (hour - 7) * 4 + minute / 15 + 1;
         } else if (hour >= 12 && hour < 24) {
-            // For times between 12:00 PM and 11:45 PM
             rowIndex = 21 + (hour - 12) * 4 + minute / 15;
         } else {
-            // For times between 12:00 AM and 6:45 AM
             rowIndex = 69 + hour * 4 + minute / 15;
         }
 
-        // Adjust for times that exactly fall on 12:00 AM
         if (hour == 0 && minute == 0) {
             rowIndex = 69;
         }
@@ -285,23 +336,32 @@ public class mainpageController {
         return rowIndex;
     }
 
+    private int roundToNearest15(int minute) {
+        return (int) (Math.round(minute / 15.0) * 15) % 60;
+    }
     public int calculateRowSpan(String selectedDay, String fromTime, String toTime, String description, String color) {
         int fromRowIndex = calculateRowIndex(fromTime);
         int toRowIndex = calculateRowIndex(toTime);
 
-        // Handle wrap-around scenario (e.g., fromTime in PM and toTime in AM next day)
+        // Calculate the row span
+        int rowSpan;
+
+        // Check if the event wraps around to the next day (toTime is earlier than fromTime)
         if (toRowIndex < fromRowIndex) {
-            ScheduleBlockPane scheduleBlockPane = new ScheduleBlockPane(selectedDay, "7:00 AM", toTime, description, color);
-            scheduleBlockPane.addScheduleBlockPane();
+            // Calculate rowSpan for the part of the event before midnight
+            int endOfDayRowIndex = calculateRowIndex("11:59 PM"); // Assuming planner ends at 11:59 PM
+            rowSpan = endOfDayRowIndex - fromRowIndex + 1;
+
+            // Add another pane for the part of the event after midnight
+            ScheduleBlockPane nextDayPane = new ScheduleBlockPane(selectedDay, "7:00 AM", toTime, description, color);
+            nextDayPane.addScheduleBlockPane();
+        } else {
+            rowSpan = toRowIndex - fromRowIndex;
         }
 
-        // Calculate the row span
-        int rowSpan = toRowIndex - fromRowIndex;
-
-        // For a block that ends exactly at the start of a new interval
-        // (e.g., 8:00 to 9:00 should be a span of 4, not 3)
-        if (rowSpan == 0) {
-            rowSpan = 96; // Full cycle, covers the entire planner grid
+        // Adjust for cases where fromTime and toTime are in the same 15-minute block
+        if (rowSpan <= 0) {
+            rowSpan = 1; // Minimum span to show the event
         }
 
         return rowSpan;
@@ -333,7 +393,6 @@ public class mainpageController {
 
         return schedules;
     }
-
     public void displaySchedules() throws SQLException {
         List<ScheduleBlock> schedules = loadSchedulesFromDatabase();
 
@@ -375,8 +434,6 @@ public class mainpageController {
             }
         }
     }
-
-
     private void removeFromDatabase(String day, String fromTime, String toTime, String description, String color) throws SQLException {
         dbConnection connectNow = new dbConnection();
         Connection connection = connectNow.connect();
@@ -389,15 +446,10 @@ public class mainpageController {
             preparedStatement.setString(3, toTime);
             preparedStatement.setString(4, description);
             preparedStatement.setString(5, color);
-
-
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             // Handle exceptions appropriately
         }
     }
-
-
-
 }
