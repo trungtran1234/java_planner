@@ -83,11 +83,11 @@
                         <Font size="19.0" />
                      </font>
                   </Label>
-                  <Spinner fx:id="FromhourSpinner" editable="true" layoutX="83.0" layoutY="116.0" prefHeight="25.0" prefWidth="69.0">
+                  <Spinner fx:id="fromHourSpinner" editable="true" layoutX="83.0" layoutY="116.0" prefHeight="25.0" prefWidth="69.0">
                      <effect>
                         <InnerShadow radius="5.62" width="3.48" />
                      </effect></Spinner>
-                  <Spinner fx:id="FromminuteSpinner" editable="true" layoutX="172.0" layoutY="116.0" prefHeight="25.0" prefWidth="66.0">
+                  <Spinner fx:id="fromMinuteSpinner" editable="true" layoutX="172.0" layoutY="116.0" prefHeight="25.0" prefWidth="66.0">
                      <effect>
                         <InnerShadow radius="5.62" width="3.48" />
                      </effect></Spinner>
@@ -96,7 +96,7 @@
                         <Font name="System Bold" size="27.0" />
                      </font>
                   </Label>
-                  <ComboBox fx:id="FromamPmBox" layoutX="243.0" layoutY="115.0" prefHeight="25.0" prefWidth="62.0" promptText="AM" visibleRowCount="2">
+                  <ComboBox fx:id="fromAmPmBox" layoutX="243.0" layoutY="115.0" prefHeight="25.0" prefWidth="62.0" promptText="AM" visibleRowCount="2">
                      <effect>
                         <DropShadow height="7.37" radius="4.6450000000000005" width="13.21" />
                      </effect></ComboBox>
