@@ -148,7 +148,7 @@ public class mainpageController {
         int fromRowIndex = calculateRowIndex(fromTime);
         int toRowIndex = calculateRowIndex(toTime);
 
-        if (fromTime.equals(toTime)) {
+        if (calculateRowIndex(toTime) == (calculateRowIndex(fromTime))) {
             alertLabel.setText("Invalid Time");
             return;
         }
@@ -162,16 +162,16 @@ public class mainpageController {
         if (toRowIndex < fromRowIndex) {
             // If the toTime is on the next day, create two panes
             // First pane: fromTime to the end of the day (6:45 AM)
-            ScheduleBlockPane eveningPane = new ScheduleBlockPane(selectedDay, fromTime, "6:45 AM", description, color);
+            ScheduleBlockPane eveningPane = new ScheduleBlockPane(selectedDay, fromTime, "6:45 AM", description, color, true, fromTime, toTime);
             eveningPane.addScheduleBlockPane();
 
             // Second pane: from the start of the day (7:00 AM) to toTime
-            ScheduleBlockPane morningPane = new ScheduleBlockPane(selectedDay, "7:00 AM", toTime, description, color);
+            ScheduleBlockPane morningPane = new ScheduleBlockPane(selectedDay, "7:00 AM", toTime, description, color, true, fromTime, toTime);
             morningPane.addScheduleBlockPane();
         } else {
             // Create a single pane for the schedule block
             int rowSpan = calculateRowSpan(selectedDay, fromTime, toTime, description, color);
-            ScheduleBlockPane scheduleBlockPane = new ScheduleBlockPane(selectedDay, fromTime, toTime, description, color);
+            ScheduleBlockPane scheduleBlockPane = new ScheduleBlockPane(selectedDay, fromTime, toTime, description, color, false, fromTime, toTime);
             scheduleBlockPane.addScheduleBlockPane();
         }
     }
@@ -234,9 +234,9 @@ public class mainpageController {
         private static int rowSpan;
         private Button deleteButton;
 
-        public ScheduleBlockPane(String day, String fromTime, String toTime, String description, String color) {
+        public ScheduleBlockPane(String day, String fromTime, String toTime, String description, String color, boolean wrap, String ogFromTime, String ogToTime) {
             // Create UI elements to display the schedule block information
-            Label descriptionLabel = new Label("Event: " + description + "\n\n" + fromTime + " - " + toTime);
+            Label descriptionLabel = new Label("Event: " + description + "\n\n" + ogFromTime + " - " + ogToTime);
             descriptionLabel.setStyle("-fx-font-weight: bold;");
             descriptionLabel.setWrapText(true); // Enable text wrapping
             descriptionLabel.setMaxWidth(70);
@@ -257,7 +257,7 @@ public class mainpageController {
             deleteButton.setLayoutY(3);
             deleteButton.setOnAction(e -> {
                 try {
-                    handleDelete(day, fromTime, toTime, description, color);
+                    handleDelete(day, fromTime, toTime, description, color, wrap, ogFromTime, ogToTime);
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -266,9 +266,15 @@ public class mainpageController {
             // Add the delete button to the pane
             getChildren().add(deleteButton);
         }
-        private void handleDelete(String day, String fromTime, String toTime, String description, String color) throws SQLException {
+        private void handleDelete(String day, String fromTime, String toTime, String description, String color, boolean wrap, String ogFromTime, String ogToTime) throws SQLException {
             // Remove from database
-            removeFromDatabase(day, fromTime, toTime, description, color);
+            if (wrap)
+            {
+                removeFromDatabase(day, ogFromTime, ogToTime, description, color);
+            }
+            else {
+                removeFromDatabase(day, fromTime, toTime, description, color);
+            }
 
             // Remove this pane from the grid
             gridPane.getChildren().remove(this);
@@ -362,7 +368,7 @@ public class mainpageController {
             rowSpan = endOfDayRowIndex - fromRowIndex + 1;
 
             // Add another pane for the part of the event after midnight
-            ScheduleBlockPane nextDayPane = new ScheduleBlockPane(selectedDay, "7:00 AM", toTime, description, color);
+            ScheduleBlockPane nextDayPane = new ScheduleBlockPane(selectedDay, "7:00 AM", toTime, description, color, false, fromTime, toTime);
             nextDayPane.addScheduleBlockPane();
         } else {
             rowSpan = toRowIndex - fromRowIndex;
@@ -419,7 +425,10 @@ public class mainpageController {
                         schedule.getFromTime(),
                         "6:45 AM", // Assuming this is the end of your day
                         schedule.getDescription(),
-                        schedule.getColor()
+                        schedule.getColor(),
+                        true,
+                        schedule.getFromTime(),
+                        schedule.getToTime()
                 );
                 eveningPane.addScheduleBlockPane(); // Add pane for the evening part
 
@@ -428,7 +437,10 @@ public class mainpageController {
                         "7:00 AM", // Assuming this is the start of your day
                         schedule.getToTime(),
                         schedule.getDescription(),
-                        schedule.getColor()
+                        schedule.getColor(),
+                        true,
+                        schedule.getFromTime(),
+                        schedule.getToTime()
 
                 );
                 morningPane.addScheduleBlockPane(); // Add pane for the morning part
@@ -439,7 +451,10 @@ public class mainpageController {
                         schedule.getFromTime(),
                         schedule.getToTime(),
                         schedule.getDescription(),
-                        schedule.getColor()
+                        schedule.getColor(),
+                        false,
+                        schedule.getFromTime(),
+                        schedule.getToTime()
 
                 );
                 pane.addScheduleBlockPane();
@@ -450,18 +465,17 @@ public class mainpageController {
         dbConnection connectNow = new dbConnection();
         Connection connection = connectNow.connect();
 
-        String deleteQuery = "DELETE FROM schedules WHERE day = ? AND start_time = ? AND end_time = ? AND description = ? AND color = ?";
-
+        String deleteQuery = "DELETE FROM schedules WHERE day = ? AND start_time = ? AND end_time = ? AND COALESCE(description, '') = ? AND color = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery)) {
             preparedStatement.setString(1, day);
             preparedStatement.setString(2, fromTime);
             preparedStatement.setString(3, toTime);
-            preparedStatement.setString(4, description);
+            preparedStatement.setString(4, description != null ? description : "");
             preparedStatement.setString(5, color);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-            // Handle exceptions appropriately
         }
     }
+
 }
