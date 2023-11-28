@@ -61,12 +61,19 @@ public class mainpageController {
     private Label sundayLabel;
     @FXML
     private Label alertLabel;
+    @FXML
+    private Label currentDateLabel;
+    private LocalDate startOfWeekForDB;
+    private LocalDate startOfWeek = currentDate.with(DayOfWeek.MONDAY);
+
 
     public void initialize() throws SQLException {
 
         displaySchedules();
         updateDateLabels();
         updateWeekLabel();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy");
+        currentDateLabel.setText("Today is " + currentDate.format(formatter));
         //from
         FromamPmBox.setValue("AM");
         FromamPmBox.setVisibleRowCount(2);
@@ -168,11 +175,6 @@ public class mainpageController {
             scheduleBlockPane.addScheduleBlockPane();
         }
     }
-
-    private void showAlert(String message) {
-
-    }
-
     private String formatTime(int hour, int minute, String amPm) {
         return String.format("%02d:%02d %s", hour, minute, amPm);
     }
@@ -187,27 +189,31 @@ public class mainpageController {
         }
     }
     private void updateWeekLabel() {
-        LocalDate startOfWeek = currentDate.with(DayOfWeek.MONDAY);
+        startOfWeek = currentDate.with(DayOfWeek.MONDAY);
+        startOfWeekForDB = startOfWeek;
         LocalDate endOfWeek = currentDate.with(DayOfWeek.SUNDAY);
         DateTimeFormatter Formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         String formattedDate = startOfWeek.format(Formatter) + " - " + endOfWeek.format(Formatter);
         weekLabel.setText(formattedDate);
+
     }
-    public void prevWeek(ActionEvent event) {
+    public void prevWeek(ActionEvent event) throws SQLException {
         currentDate = currentDate.minusWeeks(1);
         updateWeekLabel();
         updateDateLabels();
+        displaySchedules();
     }
-    public void nextWeek(ActionEvent event) {
+    public void nextWeek(ActionEvent event) throws SQLException {
         currentDate = currentDate.plusWeeks(1);
         updateWeekLabel();
         updateDateLabels();
+        displaySchedules();
     }
     public void addToDatabase(ScheduleBlock scheduleBlock) throws SQLException {
         dbConnection connectNow = new dbConnection();
         Connection connection = connectNow.connect();
 
-        String insertQuery = "INSERT INTO schedules (day, start_time, end_time, description, color) VALUES (?, ?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO schedules (day, start_time, end_time, description, color, entry_date) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
             preparedStatement.setString(1, scheduleBlock.getDay());
@@ -215,6 +221,8 @@ public class mainpageController {
             preparedStatement.setString(3, scheduleBlock.getToTime());
             preparedStatement.setString(4, scheduleBlock.getDescription());
             preparedStatement.setString(5, scheduleBlock.getColor());
+            DateTimeFormatter dbFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd");
+            preparedStatement.setString(6, startOfWeekForDB.format(dbFormatter));
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -228,7 +236,8 @@ public class mainpageController {
 
         public ScheduleBlockPane(String day, String fromTime, String toTime, String description, String color) {
             // Create UI elements to display the schedule block information
-            Label descriptionLabel = new Label("Event: " + description + "\n" + fromTime + " - " + toTime);
+            Label descriptionLabel = new Label("Event: " + description + "\n\n" + fromTime + " - " + toTime);
+            descriptionLabel.setStyle("-fx-font-weight: bold;");
             descriptionLabel.setWrapText(true); // Enable text wrapping
             descriptionLabel.setMaxWidth(70);
             descriptionLabel.setLayoutX(5);
@@ -367,35 +376,38 @@ public class mainpageController {
         return rowSpan;
     }
 
-    public List<ScheduleBlock> loadSchedulesFromDatabase() throws SQLException {
+    public List<ScheduleBlock> loadSchedulesFromDatabase(String startDate) throws SQLException {
         List<ScheduleBlock> schedules = new ArrayList<>();
-        dbConnection connectNow = new dbConnection(); // Replace with your database connection class
-        Connection connection = connectNow.connect(); // Establish connection
+        dbConnection connectNow = new dbConnection();
+        Connection connection = connectNow.connect();
 
-        String query = "SELECT day, start_time, end_time, description, color FROM schedules"; // Modify as per your table structure
+        String query = "SELECT day, start_time, end_time, description, color FROM schedules WHERE entry_date = ?"; // Modify as per your table structure
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, startDate);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    String day = resultSet.getString("day");
+                    String startTime = resultSet.getString("start_time");
+                    String endTime = resultSet.getString("end_time");
+                    String description = resultSet.getString("description");
+                    String color = resultSet.getString("color");
 
-            while (resultSet.next()) {
-                String day = resultSet.getString("day");
-                String startTime = resultSet.getString("start_time");
-                String endTime = resultSet.getString("end_time");
-                String description = resultSet.getString("description");
-                String color = resultSet.getString("color");
-
-                ScheduleBlock scheduleBlock = new ScheduleBlock(day, startTime, endTime, description, color);
-                schedules.add(scheduleBlock);
+                    ScheduleBlock scheduleBlock = new ScheduleBlock(day, startTime, endTime, description, color);
+                    schedules.add(scheduleBlock);
+                }
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // Handle exceptions appropriately
+            e.printStackTrace();
         }
 
         return schedules;
     }
     public void displaySchedules() throws SQLException {
-        List<ScheduleBlock> schedules = loadSchedulesFromDatabase();
+        DateTimeFormatter dbFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd");
+        List<ScheduleBlock> schedules = loadSchedulesFromDatabase(startOfWeek.format(dbFormatter));
 
+        gridPane.getChildren().removeIf(node -> node instanceof ScheduleBlockPane);
         for (ScheduleBlock schedule : schedules) {
             int fromRowIndex = calculateRowIndex(schedule.getFromTime());
             int toRowIndex = calculateRowIndex(schedule.getToTime());
