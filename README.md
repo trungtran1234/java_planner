@@ -1,4 +1,23 @@
-# Project Proposal: Collaborative Planner
+# Project Report
+## Steps to run code
+-
+
+## Snapshot of the running program
+![image](https://github.com/trungtran1234/CS151-CollaborativePlanner/assets/131917314/d55230ed-5e56-402a-a72b-ef86a0af84bf)
+
+## Brief description of how you solved the problem mentioned in the proposal
+While our team originally proposed a collaborative planner application, we made the selective decision to cut down our project from being as involved and utilizing technologies we were inexperienced with and, instead, decided to settle for an individual planner application. The problem of people having to coordinate their schedules has still been resolved within our application as it sufficiently allows users to create and organize their schedules visually and manually through the use of our application.
+
+## UML Class Diagram
+![umlclass](https://github.com/trungtran1234/CS151-CollaborativePlanner/assets/131917314/e4455f95-12fe-4562-aa63-39a0896fcb6a)
+
+## Brief description of your application
+-
+
+## Individual contributions (Who did what?), with a rating of percentage of work done by the individual. The sum of the percentage of work done by all team members should be equal to 100. Also, briefly describe (in a few words only) the work done by each member.
+-
+
+# Original Project Proposal: Collaborative Planner
 ## Group 6
 ## By Trung Tran, Edison Nguyen, and Phuc Nguyen
 
