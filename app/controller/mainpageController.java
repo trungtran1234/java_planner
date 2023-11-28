@@ -11,7 +11,6 @@ import javafx.scene.paint.Color;
 import java.sql.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -35,11 +34,11 @@ public class mainpageController {
     @FXML
     private ComboBox<String> dayBox;
     @FXML
-    private Spinner<Integer> FromhourSpinner;
+    private Spinner<Integer> fromHourSpinner;
     @FXML
-    private Spinner<Integer> FromminuteSpinner;
+    private Spinner<Integer> fromMinuteSpinner;
     @FXML
-    private ComboBox<String> FromamPmBox;
+    private ComboBox<String> fromAmPmBox;
     @FXML
     private ColorPicker colorPicker;
     @FXML
@@ -75,11 +74,11 @@ public class mainpageController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy");
         currentDateLabel.setText("Today is " + currentDate.format(formatter));
         //from
-        FromamPmBox.setValue("AM");
-        FromamPmBox.setVisibleRowCount(2);
-        FromamPmBox.getItems().add("AM");
-        FromamPmBox.getItems().add("PM");
-        FromamPmBox.setEditable(false);
+        fromAmPmBox.setValue("AM");
+        fromAmPmBox.setVisibleRowCount(2);
+        fromAmPmBox.getItems().add("AM");
+        fromAmPmBox.getItems().add("PM");
+        fromAmPmBox.setEditable(false);
 
         //to
         amPmBox.setValue("AM");
@@ -107,8 +106,8 @@ public class mainpageController {
         this.minuteSpinner.setValueFactory(minuteValues);
         SpinnerValueFactory<Integer> fromHourValues = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 12, 7);
         SpinnerValueFactory<Integer> fromMinuteValues = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59, 0);
-        this.FromhourSpinner.setValueFactory(fromHourValues);
-        this.FromminuteSpinner.setValueFactory(fromMinuteValues);
+        this.fromHourSpinner.setValueFactory(fromHourValues);
+        this.fromMinuteSpinner.setValueFactory(fromMinuteValues);
 
         colorPicker.setValue(Color.LIGHTBLUE);
     }
@@ -119,6 +118,7 @@ public class mainpageController {
         private final String description;
         private final String color;
 
+        // Constructor
         public ScheduleBlock(String day, String fromTime, String toTime, String description, String color) {
             this.day = day;
             this.fromTime = fromTime;
@@ -135,9 +135,10 @@ public class mainpageController {
         public String getColor() { return this.color; }
 
     }
+    // Action for Submitting Schedule Block
     public void SubmitScheduleBlock(ActionEvent event) throws SQLException {
         String selectedDay = dayBox.getValue();
-        String fromTime = formatTime(FromhourSpinner.getValue(), FromminuteSpinner.getValue(), FromamPmBox.getValue());
+        String fromTime = formatTime(fromHourSpinner.getValue(), fromMinuteSpinner.getValue(), fromAmPmBox.getValue());
         String toTime = formatTime(hourSpinner.getValue(), minuteSpinner.getValue(), amPmBox.getValue());
         String description = descriptionTextArea.getText();
         Color selectedColor = colorPicker.getValue();
@@ -197,12 +198,14 @@ public class mainpageController {
         weekLabel.setText(formattedDate);
 
     }
+    // Action for accessing Previous Week
     public void prevWeek(ActionEvent event) throws SQLException {
         currentDate = currentDate.minusWeeks(1);
         updateWeekLabel();
         updateDateLabels();
         displaySchedules();
     }
+    // Action for accessing Next Week
     public void nextWeek(ActionEvent event) throws SQLException {
         currentDate = currentDate.plusWeeks(1);
         updateWeekLabel();
