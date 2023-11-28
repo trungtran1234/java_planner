@@ -20,9 +20,9 @@
 
 <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1592.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controller.mainpageController">
    <children>
-      <AnchorPane prefHeight="1080.0" prefWidth="453.0" style="-fx-background-color: linear-gradient(to bottom, #f29b7c, #ab8bfc);">
+      <AnchorPane prefHeight="1080.0" prefWidth="453.0" style="-fx-background-color: linear-gradient(to bottom, #79c6f5, #e0f3fc);">
          <children>
-            <AnchorPane layoutX="62.0" layoutY="224.0" prefHeight="481.0" prefWidth="333.0" style="-fx-border-color: orange; -fx-border-radius: 40; -fx-border-width: 5;">
+            <AnchorPane layoutX="62.0" layoutY="224.0" prefHeight="481.0" prefWidth="333.0" style="-fx-border-color: orange; -fx-border-radius: 40; -fx-border-width: 2; -fx-background-color: linear-gradient(to bottom, #48b0fd, #9dcff8); -fx-background-radius: 40;">
                <children>
                   <Label layoutX="91.0" layoutY="23.0" text="Add new event">
                      <font>
