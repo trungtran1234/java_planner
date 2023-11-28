@@ -22,7 +22,7 @@
    <children>
       <AnchorPane prefHeight="1080.0" prefWidth="453.0" style="-fx-background-color: linear-gradient(to bottom, #f29b7c, #ab8bfc);">
          <children>
-            <AnchorPane layoutX="62.0" layoutY="224.0" prefHeight="481.0" prefWidth="333.0" style="-fx-border-color: orange; -fx-border-radius: 40;">
+            <AnchorPane layoutX="62.0" layoutY="224.0" prefHeight="481.0" prefWidth="333.0" style="-fx-border-color: orange; -fx-border-radius: 40; -fx-border-width: 5;">
                <children>
                   <Label layoutX="91.0" layoutY="23.0" text="Add new event">
                      <font>
