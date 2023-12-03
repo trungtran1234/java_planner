@@ -4,7 +4,7 @@
 ## Steps to run code
 - Download/Import the code to a respective Java-applicable IDE
 - Download and utilize the following libraries:
-JavaFX, slf4j-api-2.0.9, & sqlite-jdbc-3.44.0.0
+[JavaFX](https://gluonhq.com/products/javafx/), [slf4j-api-2.0.9](https://github.com/trungtran1234/CS151-CollaborativePlanner/releases/download/lib/slf4j-api-2.0.9.jar), & [sqlite-jdbc-3.44.0.0](https://github.com/trungtran1234/CS151-CollaborativePlanner/releases/download/lib%2B/sqlite-jdbc-3.44.0.0.jar)
 - Run the Main.java class
 
 ## Snapshot of the running program
