@@ -2,7 +2,10 @@
 ## Presentation Link: [Here!](https://docs.google.com/presentation/d/1BzaEs5NAVcdYS_kA8tDKT4DYsPtknE7kZclVpFuIz_I/edit?usp=sharing)
 
 ## Steps to run code
--
+- Download/Import the code to a respective Java-applicable IDE
+- Download and utilize the following libraries:
+JavaFX, slf4j-api-2.0.9, & sqlite-jdbc-3.44.0.0
+- Run the Main.java class
 
 ## Snapshot of the running program
 ![image](https://github.com/trungtran1234/CS151-CollaborativePlanner/assets/131917314/d55230ed-5e56-402a-a72b-ef86a0af84bf)
@@ -14,10 +17,7 @@ While our team originally proposed a collaborative planner application, we made 
 ![umlclass](https://github.com/trungtran1234/CS151-CollaborativePlanner/assets/131917314/e4455f95-12fe-4562-aa63-39a0896fcb6a)
 
 ## Brief description of your application
--
-
-## Individual contributions (Who did what?), with a rating of percentage of work done by the individual. The sum of the percentage of work done by all team members should be equal to 100. Also, briefly describe (in a few words only) the work done by each member.
--
+- Our application is an individual planner allowing users to create their own custom schedules. Available actions include setting schedule blocks by time, overlapping events, a color picker for the blocks, dynamic week recognition and recording, as well as live readings from your current time.
 
 # Original Project Proposal: Collaborative Planner
 ## Group 6
