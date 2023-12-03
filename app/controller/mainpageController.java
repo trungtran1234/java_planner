@@ -161,17 +161,27 @@ public class mainpageController {
 
         //frontend
         if (toRowIndex < fromRowIndex) {
+            String nextDay = selectedDay;
+            switch (selectedDay) {
+                case "Monday" -> nextDay = "Tuesday";
+                case "Tuesday" -> nextDay = "Wednesday";
+                case "Wednesday" -> nextDay = "Thursday";
+                case "Thursday" -> nextDay = "Friday";
+                case "Friday" -> nextDay = "Saturday";
+                case "Saturday" -> nextDay = "Sunday";
+                case "Sunday" -> nextDay = "Monday";
+            }
+
             // If the toTime is on the next day, create two panes
             // First pane: fromTime to the end of the day (6:45 AM)
             ScheduleBlockPane eveningPane = new ScheduleBlockPane(selectedDay, fromTime, "6:45 AM", description, color, true, fromTime, toTime);
             eveningPane.addScheduleBlockPane();
 
-            // Second pane: from the start of the day (7:00 AM) to toTime
-            ScheduleBlockPane morningPane = new ScheduleBlockPane(selectedDay, "7:00 AM", toTime, description, color, true, fromTime, toTime);
+            // Second pane: from the start of the next day (7:00 AM) to toTime
+            ScheduleBlockPane morningPane = new ScheduleBlockPane(nextDay, "7:00 AM", toTime, description, color, true, fromTime, toTime);
             morningPane.addScheduleBlockPane();
         } else {
             // Create a single pane for the schedule block
-            int rowSpan = calculateRowSpan(selectedDay, fromTime, toTime, description, color);
             ScheduleBlockPane scheduleBlockPane = new ScheduleBlockPane(selectedDay, fromTime, toTime, description, color, false, fromTime, toTime);
             scheduleBlockPane.addScheduleBlockPane();
         }
@@ -224,7 +234,7 @@ public class mainpageController {
             preparedStatement.setString(3, scheduleBlock.getToTime());
             preparedStatement.setString(4, scheduleBlock.getDescription());
             preparedStatement.setString(5, scheduleBlock.getColor());
-            DateTimeFormatter dbFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd");
+            DateTimeFormatter dbFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             preparedStatement.setString(6, startOfWeekForDB.format(dbFormatter));
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -288,31 +298,16 @@ public class mainpageController {
         }
     }
     private int calculateColumnIndex(String selectedDay) {
-        int columnIndex = 1; // Default value
-        switch (selectedDay) {
-            case "Monday":
-                columnIndex = 1;
-                break;
-            case "Tuesday":
-                columnIndex = 2;
-                break;
-            case "Wednesday":
-                columnIndex = 3;
-                break;
-            case "Thursday":
-                columnIndex = 4;
-                break;
-            case "Friday":
-                columnIndex = 5;
-                break;
-            case "Saturday":
-                columnIndex = 6;
-                break;
-            case "Sunday":
-                columnIndex = 7;
-                break;
-        }
-        return columnIndex;
+        return switch (selectedDay) {
+            case "Monday" -> 1;
+            case "Tuesday" -> 2;
+            case "Wednesday" -> 3;
+            case "Thursday" -> 4;
+            case "Friday" -> 5;
+            case "Saturday" -> 6;
+            case "Sunday" -> 7;
+            default -> 1; // Default value
+        };
     }
     private int calculateRowIndex(String fromTime) {
         // Split the time into components
@@ -360,6 +355,16 @@ public class mainpageController {
     public int calculateRowSpan(String selectedDay, String fromTime, String toTime, String description, String color) {
         int fromRowIndex = calculateRowIndex(fromTime);
         int toRowIndex = calculateRowIndex(toTime);
+        String nextDay = selectedDay;
+        switch (selectedDay) {
+            case "Monday" -> nextDay = "Tuesday";
+            case "Tuesday" -> nextDay = "Wednesday";
+            case "Wednesday" -> nextDay = "Thursday";
+            case "Thursday" -> nextDay = "Friday";
+            case "Friday" -> nextDay = "Saturday";
+            case "Saturday" -> nextDay = "Sunday";
+            case "Sunday" -> nextDay = "Monday";
+        }
 
         // Calculate the row span
         int rowSpan;
@@ -371,7 +376,7 @@ public class mainpageController {
             rowSpan = endOfDayRowIndex - fromRowIndex + 1;
 
             // Add another pane for the part of the event after midnight
-            ScheduleBlockPane nextDayPane = new ScheduleBlockPane(selectedDay, "7:00 AM", toTime, description, color, false, fromTime, toTime);
+            ScheduleBlockPane nextDayPane = new ScheduleBlockPane(nextDay, "7:00 AM", toTime, description, color, false, fromTime, toTime);
             nextDayPane.addScheduleBlockPane();
         } else {
             rowSpan = toRowIndex - fromRowIndex;
@@ -413,7 +418,7 @@ public class mainpageController {
         return schedules;
     }
     public void displaySchedules() throws SQLException {
-        DateTimeFormatter dbFormatter = DateTimeFormatter.ofPattern("YYYY-MM-dd");
+        DateTimeFormatter dbFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         List<ScheduleBlock> schedules = loadSchedulesFromDatabase(startOfWeek.format(dbFormatter));
 
         gridPane.getChildren().removeIf(node -> node instanceof ScheduleBlockPane);
