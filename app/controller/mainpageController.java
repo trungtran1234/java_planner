@@ -161,13 +161,24 @@ public class mainpageController {
 
         //frontend
         if (toRowIndex < fromRowIndex) {
+            String nextDay = selectedDay;
+            switch (selectedDay) {
+                case "Monday" -> nextDay = "Tuesday";
+                case "Tuesday" -> nextDay = "Wednesday";
+                case "Wednesday" -> nextDay = "Thursday";
+                case "Thursday" -> nextDay = "Friday";
+                case "Friday" -> nextDay = "Saturday";
+                case "Saturday" -> nextDay = "Sunday";
+                case "Sunday" -> nextDay = "Monday";
+            }
+
             // If the toTime is on the next day, create two panes
             // First pane: fromTime to the end of the day (6:45 AM)
             ScheduleBlockPane eveningPane = new ScheduleBlockPane(selectedDay, fromTime, "6:45 AM", description, color, true, fromTime, toTime);
             eveningPane.addScheduleBlockPane();
 
-            // Second pane: from the start of the day (7:00 AM) to toTime
-            ScheduleBlockPane morningPane = new ScheduleBlockPane(selectedDay, "7:00 AM", toTime, description, color, true, fromTime, toTime);
+            // Second pane: from the start of the next day (7:00 AM) to toTime
+            ScheduleBlockPane morningPane = new ScheduleBlockPane(nextDay, "7:00 AM", toTime, description, color, true, fromTime, toTime);
             morningPane.addScheduleBlockPane();
         } else {
             // Create a single pane for the schedule block
