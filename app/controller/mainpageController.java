@@ -360,6 +360,16 @@ public class mainpageController {
     public int calculateRowSpan(String selectedDay, String fromTime, String toTime, String description, String color) {
         int fromRowIndex = calculateRowIndex(fromTime);
         int toRowIndex = calculateRowIndex(toTime);
+        String nextDay = selectedDay;
+        switch (selectedDay) {
+            case "Monday" -> nextDay = "Tuesday";
+            case "Tuesday" -> nextDay = "Wednesday";
+            case "Wednesday" -> nextDay = "Thursday";
+            case "Thursday" -> nextDay = "Friday";
+            case "Friday" -> nextDay = "Saturday";
+            case "Saturday" -> nextDay = "Sunday";
+            case "Sunday" -> nextDay = "Monday";
+        }
 
         // Calculate the row span
         int rowSpan;
@@ -371,7 +381,7 @@ public class mainpageController {
             rowSpan = endOfDayRowIndex - fromRowIndex + 1;
 
             // Add another pane for the part of the event after midnight
-            ScheduleBlockPane nextDayPane = new ScheduleBlockPane(selectedDay, "7:00 AM", toTime, description, color, false, fromTime, toTime);
+            ScheduleBlockPane nextDayPane = new ScheduleBlockPane(nextDay, "7:00 AM", toTime, description, color, false, fromTime, toTime);
             nextDayPane.addScheduleBlockPane();
         } else {
             rowSpan = toRowIndex - fromRowIndex;
