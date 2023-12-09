@@ -3,7 +3,7 @@
 
 ## Steps to run code
 - Download/Import the code to a respective Java-applicable IDE
-- Make sure your IDE is using the latest Java Development Kit (JDK)
+- Make sure your IDE is using the latest Java Development Kit (JDK 21)
 - Download and configure the following libraries into your IDE:
 [JavaFX](https://gluonhq.com/products/javafx/), [slf4j-api-2.0.9](https://github.com/trungtran1234/CS151-CollaborativePlanner/releases/download/lib/slf4j-api-2.0.9.jar), & [sqlite-jdbc-3.44.0.0](https://github.com/trungtran1234/CS151-CollaborativePlanner/releases/download/lib%2B/sqlite-jdbc-3.44.0.0.jar)
 - Run the Main.java class
