@@ -242,44 +242,130 @@ public class mainpageController {
         }
     }
     public class ScheduleBlockPane extends Pane {
+
+        private Label descriptionLabel; // Instance variable for description
+        private Button deleteButton;
+        private Button editButton;
+        // Instance variables for schedule information
+        private String day;
+        private String fromTime;
+        private String toTime;
+        private String ogFromTime;
+        private String ogToTime;
+        private String description;
+        private String color;
+        private boolean wrap;
         private static int columnIndex;
         private static int rowIndex;
         private static int rowSpan;
-        private Button deleteButton;
 
         public ScheduleBlockPane(String day, String fromTime, String toTime, String description, String color, boolean wrap, String ogFromTime, String ogToTime) {
+            // Initialize instance variables
+            this.day = day;
+            this.fromTime = fromTime;
+            this.toTime = toTime;
+            this.description = description;
+            this.color = color;
+            this.wrap = wrap;
+            this.ogFromTime = ogFromTime;
+            this.ogToTime = ogToTime;
+
             // Create UI elements to display the schedule block information
-            Label descriptionLabel = new Label("Event: " + description + "\n\n" + ogFromTime + " - " + ogToTime);
+            descriptionLabel = new Label("Event: " + description + "\n\n" + ogFromTime + " - " + ogToTime);
+            setupDescriptionLabel();
+            setupDeleteButton();
+            setupEditButton();
+
+            // Add the UI elements to the pane
+            getChildren().addAll(descriptionLabel, deleteButton, editButton);
+
+            // Calculate the position of the pane in the grid
+            calculatePosition(day, fromTime, toTime, description, color);
+        }
+
+        private void setupDescriptionLabel() {
             descriptionLabel.setStyle("-fx-font-weight: bold;");
-            descriptionLabel.setWrapText(true); // Enable text wrapping
+            descriptionLabel.setWrapText(true);
             descriptionLabel.setMaxWidth(70);
             descriptionLabel.setLayoutX(5);
             descriptionLabel.setLayoutY(20);
-            // Customize the appearance of the pane
             setStyle("-fx-background-color: " + color + ";");
-            setPrefHeight(80); // Adjust the height as needed
+            setPrefHeight(80);
+        }
 
-            // Add the UI elements to the pane
-            getChildren().addAll(descriptionLabel);
-            columnIndex = calculateColumnIndex(day);
-            rowIndex = calculateRowIndex(fromTime);
-            rowSpan = calculateRowSpan(day, fromTime, toTime, description, color);
-
+        private void setupDeleteButton() {
             deleteButton = new Button("X");
             deleteButton.setLayoutX(75);
             deleteButton.setLayoutY(3);
             deleteButton.setOnAction(e -> {
                 try {
-                    handleDelete(day, fromTime, toTime, description, color, wrap, ogFromTime, ogToTime);
+                    handleDelete(wrap);
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
             });
-            deleteButton.setStyle("-fx-background-color: lightblue; -fx-text-fill: black;");
-            // Add the delete button to the pane
-            getChildren().add(deleteButton);
+            deleteButton.setStyle("-fx-background-color: " + color + "; -fx-text-fill: black;");
         }
-        private void handleDelete(String day, String fromTime, String toTime, String description, String color, boolean wrap, String ogFromTime, String ogToTime) throws SQLException {
+
+        private void setupEditButton() {
+            editButton = new Button("Edit");
+            editButton.setLayoutX(62);
+            editButton.setLayoutY(deleteButton.getLayoutY() + deleteButton.getPrefHeight() + 25);
+            editButton.setOnAction(e -> handleEdit());
+            editButton.setStyle("-fx-background-color: " + color + "; -fx-text-fill: black;");  // Same color as the pane
+        }
+
+        private void calculatePosition(String day, String fromTime, String toTime, String description, String color) {
+            columnIndex = calculateColumnIndex(day);
+            rowIndex = calculateRowIndex(fromTime);
+            rowSpan = calculateRowSpan(day, fromTime, toTime, description, color);
+        }
+
+        private void handleEdit() {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Edit Description");
+            dialog.setHeaderText("Update the event description");
+            dialog.setContentText("Description:");
+
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(this::updateDescription);
+        }
+
+        private void updateDescription(String newDescription) {
+            try {
+                // First, update the description in the database
+                updateDescriptionInDatabase(newDescription);
+
+                // If the database update is successful, update the instance variable and UI
+                this.description = newDescription;
+                descriptionLabel.setText("Event: " + newDescription + "\n\n" + ogFromTime + " - " + ogToTime);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                // Handle exception - you might want to show an error message to the user
+            }
+        }
+        private void updateDescriptionInDatabase(String newDescription) throws SQLException {
+            dbConnection connectNow = new dbConnection();
+            Connection connection = connectNow.connect();
+
+            String updateQuery = "UPDATE schedules SET description = ? WHERE day = ? AND start_time = ? AND end_time = ? AND COALESCE(description, '') = ? AND color = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+                preparedStatement.setString(1, newDescription);
+                preparedStatement.setString(2, day);
+                preparedStatement.setString(3, fromTime);
+                preparedStatement.setString(4, toTime);
+                preparedStatement.setString(5, this.description != null ? this.description : "");
+                preparedStatement.setString(6, color);
+
+                preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                // You might want to handle this exception more gracefully
+            }
+        }
+
+
+        private void handleDelete(boolean wrap) throws SQLException {
             // Remove from database
             if (wrap)
             {
