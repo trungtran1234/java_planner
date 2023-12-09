@@ -3,7 +3,8 @@
 
 ## Steps to run code
 - Download/Import the code to a respective Java-applicable IDE
-- Download and utilize the following libraries:
+- Make sure your IDE is using the latest Java Development Kit (JDK)
+- Download and configure the following libraries into your IDE:
 [JavaFX](https://gluonhq.com/products/javafx/), [slf4j-api-2.0.9](https://github.com/trungtran1234/CS151-CollaborativePlanner/releases/download/lib/slf4j-api-2.0.9.jar), & [sqlite-jdbc-3.44.0.0](https://github.com/trungtran1234/CS151-CollaborativePlanner/releases/download/lib%2B/sqlite-jdbc-3.44.0.0.jar)
 - Run the Main.java class
 
@@ -11,13 +12,13 @@
 ![image](https://github.com/trungtran1234/CS151-CollaborativePlanner/assets/131917314/d55230ed-5e56-402a-a72b-ef86a0af84bf)
 
 ## Brief description of how you solved the problem mentioned in the proposal
-While our team originally proposed a collaborative planner application, we made the selective decision to cut down our project from being as involved and utilizing technologies we were inexperienced with and, instead, decided to settle for an individual planner application. The problem of people having to coordinate their schedules has still been resolved within our application as it sufficiently allows users to create and organize their schedules visually and manually through the use of our application.
+While our team originally proposed a collaborative planner application, we made the selective decision to cut down our project because the new technologies we would have to learn for a collaborative planner were out of scope for this class. Since we were all inexperienced, having to learn new advanced technologies would take up too much time for this project. And so we decided to settle for an individual planner application, which still contains the core concept of our original proposal. The problem of people needing help with time management and having to coordinate their schedules has still been resolved within our application; it sufficiently allows users to create and organize their schedules through the use of our application.
 
 ## UML Class Diagram
 ![umlclass](https://github.com/trungtran1234/CS151-CollaborativePlanner/assets/131917314/e4455f95-12fe-4562-aa63-39a0896fcb6a)
 
 ## Brief description of your application
-- Our application is an individual planner allowing users to create their own custom schedules. Available actions include setting schedule blocks by time, overlapping events, a color picker for the blocks, dynamic week recognition and recording, as well as live readings from your current time.
+- Our application is an individual planner that allows users to create their own custom schedules in a planner. Available actions include setting schedule blocks by time with a description, overlapping events, a color picker for the blocks, a dynamic weekly planner viewer, and it is also in sync with your current time.
 
 # Original Project Proposal: Collaborative Planner
 ## Group 6
