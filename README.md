@@ -41,19 +41,23 @@ Our collaborative planner is intended to be used by groups of individuals who wa
 #### Approach:
 We plan to make a desktop-based collaborative planner application. We plan to follow the Waterfall Model for developing this application. There will be discussions for when to move on to the next step based on the progress of the project. It is expected that we will meet every week to discuss what we did in the past week and what we plan for the next week. Meeting times will vary depending on everyone’s availability. We will communicate through Discord and help each other out so that we can learn and complete this project together.
 
-#### Key features:
-**Account management** - Users will be able to register, log in, log out, and edit a personal account. <br>
-**Group creation** - Users will be able to create groups and invite others to the group to start collaborative planning. <br>
-**Shared calendar** - Let users see everyone’s schedule on the same calendar. Users will also be able to add or remove their own schedules to the calendar. <br>
-**Commenting** - Users can highlight a specific timeline on the calendar and write a comment or note. <br>
-**Provide availability timeslots** - The application will provide the group with mutual availability timeslots based on everyone’s schedule. Whenever a user makes an adjustment to their schedule, the new adjusted availability schedule will be generated to replace the previous one. <br>
+#### Final approach(updated): Due to limited time and resources, we were not able to deliver a completed product as planned, however, we were able to make an individual planner that essentially helps the user manage their time better by inputting schedule blocks in their planner from start time to end time and they are also able to write a description of their event and choose the schedule block color. Moreover, the schedule can be extended from week to week week the actual dates in the calendar.
+
+#### Key features (updated):
+**Account management** - Users will be able to register, log in, log out, and edit a personal account. (No longer needed because it is an individual schedule ) <br>
+**Group creation** - Users will be able to create groups and invite others to the group to start collaborative planning. (No longer needed because it is an individual schedule )  <br>
+**Shared calendar** - Let users see everyone’s schedule on the same calendar. Users will also be able to add or remove their own schedules to the calendar. (No longer needed because it is an individual schedule )  <br>
+**Commenting** - Users can highlight a specific timeline on the calendar and write a comment or note. <be>
+**Edit feature** - Users can now edit the description of their schedule block <br>
+**Provide availability timeslots** - The application will provide the group with mutual availability timeslots based on everyone’s schedule. Whenever a user makes an adjustment to their schedule, the new adjusted availability schedule will be generated to replace the previous one. (No longer needed because it is an individual schedule ) <be>
+
 
 #### Technologies we will use:
 Collaborative Platform: Github and Discord <br>
 Programming Language: Java <br>
 IDE: Eclipse <br>
 Framework: JavaFX <br>
-Database: MySQL <br>
+Database: MySQL (changed to SQLite) <br>
 
 ### References: 
 [1] Timely, Timely AS (https://timelyapp.com/) <br>
