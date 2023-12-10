@@ -60,7 +60,7 @@
                         <Font name="System Bold" size="27.0" />
                      </font>
                   </Label>
-                  <ComboBox fx:id="amPmBox" layoutX="243.0" layoutY="160.0" prefHeight="25.0" prefWidth="62.0" promptText="AM" visibleRowCount="2">
+                  <ComboBox fx:id="amPmBox" layoutX="243.0" layoutY="160.0" prefHeight="28.0" prefWidth="69.0" promptText="AM" visibleRowCount="2">
                      <effect>
                         <DropShadow height="7.37" radius="4.6450000000000005" width="13.21" />
                      </effect></ComboBox>
@@ -96,7 +96,7 @@
                         <Font name="System Bold" size="27.0" />
                      </font>
                   </Label>
-                  <ComboBox fx:id="fromAmPmBox" layoutX="243.0" layoutY="115.0" prefHeight="25.0" prefWidth="62.0" promptText="AM" visibleRowCount="2">
+                  <ComboBox fx:id="fromAmPmBox" layoutX="243.0" layoutY="115.0" prefHeight="28.0" prefWidth="69.0" promptText="AM" visibleRowCount="2">
                      <effect>
                         <DropShadow height="7.37" radius="4.6450000000000005" width="13.21" />
                      </effect></ComboBox>

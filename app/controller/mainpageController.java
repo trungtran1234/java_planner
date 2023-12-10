@@ -71,7 +71,8 @@ public class mainpageController {
     private LocalDate startOfWeekForDB;
     private LocalDate startOfWeek = currentDate.with(DayOfWeek.MONDAY);
 
-
+    // initialize the schedule with values
+    // Method to initialize the controller. This is automatically called after the FXML fields are populated
     public void initialize() throws SQLException {
 
         displaySchedules();
@@ -117,6 +118,8 @@ public class mainpageController {
 
         colorPicker.setValue(Color.LIGHTBLUE);
     }
+
+    // ScheduleBlock class that has these properties
     public static class ScheduleBlock {
         private final String day;
         private final String fromTime;  // "HH:mm AM/PM" format
@@ -193,9 +196,13 @@ public class mainpageController {
             scheduleBlockPane.addScheduleBlockPane();
         }
     }
+
+    // helper method to format the time
     private String formatTime(int hour, int minute, String amPm) {
         return String.format("%02d:%02d %s", hour, minute, amPm);
     }
+
+    // Methods to update date labels and week labels
     private void updateDateLabels() {
         LocalDate startOfWeek = currentDate.with(DayOfWeek.MONDAY);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd\nEEEE");
@@ -206,6 +213,8 @@ public class mainpageController {
             dayLabels[i].setText(date.format(formatter));
         }
     }
+
+    // Methods to update date labels and week labels
     private void updateWeekLabel() {
         startOfWeek = currentDate.with(DayOfWeek.MONDAY);
         startOfWeekForDB = startOfWeek;
@@ -229,6 +238,8 @@ public class mainpageController {
         updateDateLabels();
         displaySchedules();
     }
+
+    // addSCheduleBlock to the database
     public void addToDatabase(ScheduleBlock scheduleBlock) throws SQLException {
         dbConnection connectNow = new dbConnection();
         Connection connection = connectNow.connect();
@@ -248,6 +259,8 @@ public class mainpageController {
             e.printStackTrace();
         }
     }
+
+    // This class actually shows the SCheduleBlockPane in the frontend
     public class ScheduleBlockPane extends Pane {
 
         private Button editTimeButton; // Button for editing time
@@ -293,6 +306,7 @@ public class mainpageController {
             calculatePosition(day, fromTime, toTime, description, color);
         }
 
+        //  setup the description label
         private void setupDescriptionLabel() {
             descriptionLabel.setStyle("-fx-font-weight: bold;");
             descriptionLabel.setWrapText(true);
@@ -303,6 +317,7 @@ public class mainpageController {
             setPrefHeight(80);
         }
 
+        //set up the edit time button for it to show up on the BlockPane
         private void setupEditTimeButton() {
             editTimeButton = new Button("Edit Time");
             editTimeButton.setPrefSize(100, 20);
@@ -313,6 +328,8 @@ public class mainpageController {
             getChildren().add(editTimeButton); // Add the button to the pane
         }
 
+
+        // this method handle editing time when we hit submit
         private void handleEditTime() {
             // Create the dialog
             Dialog<Pair<String, String>> dialog = new Dialog<>();
@@ -374,6 +391,8 @@ public class mainpageController {
             // Show the dialog and process the result
             Optional<Pair<String, String>> result = dialog.showAndWait();
 
+
+            //delete old schedule and add a new on into the database after editting it
             result.ifPresent(newTimes -> {
                 try {
                     handleDelete(wrap);
@@ -395,7 +414,7 @@ public class mainpageController {
             });
         }
 
-
+        // create a method to submit the schedule block on both frontend and backend
         public void submitSchedule(String newFromTime, String newToTime) throws SQLException {
             String fromTime = newFromTime;
             String toTime = newToTime;
@@ -443,17 +462,19 @@ public class mainpageController {
         }
 
 
-
+        // get the current hour to edit the time
         private int getHour(String time) {
             // Extract the hour part from the time string
             return Integer.parseInt(time.split(":")[0]);
         }
 
+        // get the current minute to edit the minute
         private int getMinute(String time) {
             // Extract the minute part from the time string
             return Integer.parseInt(time.split(":")[1].split(" ")[0]);
         }
 
+        // get the current am or pm status of old schedule block to edit the status
         private String getAmPm(String time) {
             // Extract the AM/PM part from the time string
             return time.split(" ")[1];
@@ -461,7 +482,7 @@ public class mainpageController {
 
 
 
-
+        // set up a delete button to delete the schedule block
         private void setupDeleteButton() {
             deleteButton = new Button("X");
             deleteButton.setLayoutX(75);
@@ -476,6 +497,7 @@ public class mainpageController {
             deleteButton.setStyle("-fx-background-color: " + color + "; -fx-text-fill: black;");
         }
 
+        // setup this edit button to edit the description of the event
         private void setupEditButton() {
             editButton = new Button("Edit Descr");
             editButton.setPrefSize(100, 20); // Adjust the size as needed
@@ -485,12 +507,15 @@ public class mainpageController {
             editButton.setStyle("-fx-background-color: " + color + "; -fx-text-fill: Black; -fx-font-size: 10px;-fx-border-width: 1; +  // Set the border width to 1px;\"-fx-border-insets: -10;\" ");  // Same color as the pane
         }
 
+        // helper method to calculate position to place the grid on the schedule.
         private void calculatePosition(String day, String fromTime, String toTime, String description, String color) {
             columnIndex = calculateColumnIndex(day);
             rowIndex = calculateRowIndex(fromTime);
             rowSpan = calculateRowSpan(day, fromTime, toTime, description, color);
         }
 
+
+        // a method that handle edit description once we hit the save button
         private void handleEdit() {
             TextInputDialog dialog = new TextInputDialog();
             dialog.setTitle("Edit Description");
@@ -501,6 +526,7 @@ public class mainpageController {
             result.ifPresent(this::updateDescription);
         }
 
+        // update the description in both the database and the frontend UI.
         private void updateDescription(String newDescription) {
             try {
                 // First, update the description in the database
@@ -514,6 +540,8 @@ public class mainpageController {
                 // Handle exception - you might want to show an error message to the user
             }
         }
+
+        // helper method to update the description in the database
         private void updateDescriptionInDatabase(String newDescription) throws SQLException {
             dbConnection connectNow = new dbConnection();
             Connection connection = connectNow.connect();
@@ -534,7 +562,7 @@ public class mainpageController {
             }
         }
 
-
+        // this method handle delete the schedule grid once we hit the "X button
         private void handleDelete(boolean wrap) throws SQLException {
             // Remove from database
             if (wrap)
@@ -548,11 +576,15 @@ public class mainpageController {
             // Remove this pane from the grid
             gridPane.getChildren().remove(this);
         }
+
+        // add the schedule block pane
         public void addScheduleBlockPane()
         {
             gridPane.add(this, columnIndex, rowIndex, 1, rowSpan);
         }
     }
+
+    //helper method to calculate the column position of the grid pane
     private int calculateColumnIndex(String selectedDay) {
         return switch (selectedDay) {
             case "Monday" -> 1;
@@ -565,6 +597,8 @@ public class mainpageController {
             default -> 1; // Default value
         };
     }
+
+    // helper method to calculate the row position of the grid pane
     private int calculateRowIndex(String fromTime) {
         // Split the time into components
         String[] parts = fromTime.split("[: ]"); // Split by colon and space
@@ -605,6 +639,8 @@ public class mainpageController {
         return rowIndex;
     }
 
+
+    // helper method to round the time to the nearest 15 to put it on the schedule
     private int roundToNearest15(int minute) {
         return (int) (Math.round(minute / 15.0) * 15) % 60;
     }
@@ -646,6 +682,8 @@ public class mainpageController {
         return rowSpan;
     }
 
+
+    // helper method to load the schedule from the database
     public List<ScheduleBlock> loadSchedulesFromDatabase(String startDate) throws SQLException {
         List<ScheduleBlock> schedules = new ArrayList<>();
         dbConnection connectNow = new dbConnection();
@@ -673,6 +711,7 @@ public class mainpageController {
 
         return schedules;
     }
+    // helper method to display schedule
     public void displaySchedules() throws SQLException {
         DateTimeFormatter dbFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         List<ScheduleBlock> schedules = loadSchedulesFromDatabase(startOfWeek.format(dbFormatter));
@@ -725,6 +764,8 @@ public class mainpageController {
             }
         }
     }
+
+    // helper method to remove schedule block object from the database
     private void removeFromDatabase(String day, String fromTime, String toTime, String description, String color) throws SQLException {
         dbConnection connectNow = new dbConnection();
         Connection connection = connectNow.connect();
