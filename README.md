@@ -48,7 +48,7 @@ We plan to make a desktop-based collaborative planner application. We plan to fo
 **Group creation** - Users will be able to create groups and invite others to the group to start collaborative planning. (No longer needed because it is an individual schedule )  <br>
 **Shared calendar** - Let users see everyone’s schedule on the same calendar. Users will also be able to add or remove their own schedules to the calendar. (No longer needed because it is an individual schedule )  <br>
 **Commenting** - Users can highlight a specific timeline on the calendar and write a comment or note. <br>
-**Edit feature** - Users can now edit the description of their schedule block. <br>
+**Edit feature** - Users can now edit the time and description of their schedule block. <br>
 **Provide availability timeslots** - The application will provide the group with mutual availability timeslots based on everyone’s schedule. Whenever a user makes an adjustment to their schedule, the new adjusted availability schedule will be generated to replace the previous one. (No longer needed because it is an individual schedule ) <be>
 
 
