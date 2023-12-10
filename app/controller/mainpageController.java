@@ -7,12 +7,18 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.util.Pair;
+import javafx.collections.FXCollections;
+
+
 
 import java.sql.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+
 
 
 public class mainpageController {
@@ -135,6 +141,7 @@ public class mainpageController {
         public String getColor() { return this.color; }
 
     }
+
     // Action for Submitting Schedule Block
     public void SubmitScheduleBlock(ActionEvent event) throws SQLException {
         String selectedDay = dayBox.getValue();
@@ -243,6 +250,8 @@ public class mainpageController {
     }
     public class ScheduleBlockPane extends Pane {
 
+        private Button editTimeButton; // Button for editing time
+
         private Label descriptionLabel; // Instance variable for description
         private Button deleteButton;
         private Button editButton;
@@ -275,6 +284,7 @@ public class mainpageController {
             setupDescriptionLabel();
             setupDeleteButton();
             setupEditButton();
+            setupEditTimeButton();
 
             // Add the UI elements to the pane
             getChildren().addAll(descriptionLabel, deleteButton, editButton);
@@ -293,6 +303,165 @@ public class mainpageController {
             setPrefHeight(80);
         }
 
+        private void setupEditTimeButton() {
+            editTimeButton = new Button("Edit Time");
+            editTimeButton.setPrefSize(100, 20);
+            editTimeButton.setLayoutX(0); // Top left corner
+            editTimeButton.setLayoutY(editButton.getLayoutY() + editButton.getHeight() + 25);
+            editTimeButton.setOnAction(e -> handleEditTime());
+            editTimeButton.setStyle("-fx-background-color: " + color + "; -fx-text-fill: Black; -fx-font-size: 10px;-fx-border-width: 1; +  // Set the border width to 1px;\"-fx-border-insets: -10;\" ");  // Style to match the pane
+            getChildren().add(editTimeButton); // Add the button to the pane
+        }
+
+        private void handleEditTime() {
+            // Create the dialog
+            Dialog<Pair<String, String>> dialog = new Dialog<>();
+            dialog.setTitle("Edit Time");
+            dialog.setHeaderText("Update the event time");
+
+            // Set the button types
+            ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+
+            // Create spinners and combo boxes for the fromTime and toTime
+            SpinnerValueFactory<Integer> fromHourValues = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 12, getHour(fromTime));
+            Spinner<Integer> fromHourSpinner = new Spinner<>(fromHourValues);
+            fromHourSpinner.setEditable(true);
+
+            SpinnerValueFactory<Integer> fromMinuteValues = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59, getMinute(fromTime));
+            Spinner<Integer> fromMinuteSpinner = new Spinner<>(fromMinuteValues);
+            fromMinuteSpinner.setEditable(true);
+
+            ComboBox<String> fromAmPmCombo = new ComboBox<>(FXCollections.observableArrayList("AM", "PM"));
+            fromAmPmCombo.setValue(getAmPm(fromTime));
+
+            SpinnerValueFactory<Integer> toHourValues = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 12, getHour(toTime));
+            Spinner<Integer> toHourSpinner = new Spinner<>(toHourValues);
+            toHourSpinner.setEditable(true);
+
+            SpinnerValueFactory<Integer> toMinuteValues = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59, getMinute(toTime));
+            Spinner<Integer> toMinuteSpinner = new Spinner<>(toMinuteValues);
+            toMinuteSpinner.setEditable(true);
+            
+            ComboBox<String> toAmPmCombo = new ComboBox<>(FXCollections.observableArrayList("AM", "PM"));
+            toAmPmCombo.setValue(getAmPm(toTime));
+
+            // Layout for the dialog content
+            GridPane gridPane = new GridPane();
+            gridPane.setHgap(10);
+            gridPane.setVgap(10);
+            gridPane.add(new Label("From time:"), 0, 0);
+            gridPane.add(fromHourSpinner, 1, 0);
+            gridPane.add(fromMinuteSpinner, 2, 0);
+            gridPane.add(fromAmPmCombo, 3, 0);
+            gridPane.add(new Label("To time:"), 0, 1);
+            gridPane.add(toHourSpinner, 1, 1);
+            gridPane.add(toMinuteSpinner, 2, 1);
+            gridPane.add(toAmPmCombo, 3, 1);
+
+            dialog.getDialogPane().setContent(gridPane);
+
+            // Convert the result to a pair of strings when the save button is clicked
+            dialog.setResultConverter(dialogButton -> {
+                if (dialogButton == saveButtonType) {
+                    String newFromTime = formatTime(fromHourSpinner.getValue(), fromMinuteSpinner.getValue(), fromAmPmCombo.getValue());
+                    String newToTime = formatTime(toHourSpinner.getValue(), toMinuteSpinner.getValue(), toAmPmCombo.getValue());
+                    return new Pair<>(newFromTime, newToTime);
+                }
+                return null;
+            });
+
+            // Show the dialog and process the result
+            Optional<Pair<String, String>> result = dialog.showAndWait();
+
+            result.ifPresent(newTimes -> {
+                try {
+                    handleDelete(wrap);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                // Update the times in the UI and possibly in the database
+                fromTime = newTimes.getKey(); // Update the instance variable
+                toTime = newTimes.getValue(); // Update the instance variable
+
+                try {
+                    submitSchedule(fromTime,toTime);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+
+                // Update the database with the new times
+                // updateTimesInDatabase(fromTime, toTime); // Implement this method
+            });
+        }
+
+
+        public void submitSchedule(String newFromTime, String newToTime) throws SQLException {
+            String fromTime = newFromTime;
+            String toTime = newToTime;
+
+            int fromRowIndex = calculateRowIndex(fromTime);
+            int toRowIndex = calculateRowIndex(toTime);
+
+            if (calculateRowIndex(toTime) == (calculateRowIndex(fromTime))) {
+                alertLabel.setText("Invalid Time");
+                return;
+            }
+            alertLabel.setText("");
+
+            //backend
+            ScheduleBlock scheduleBlock = new ScheduleBlock(day, fromTime, toTime, description, color);
+            addToDatabase(scheduleBlock);
+
+            //frontend
+            if (toRowIndex < fromRowIndex) {
+                String nextDay = day;
+                switch (day) {
+                    case "Monday" -> nextDay = "Tuesday";
+                    case "Tuesday" -> nextDay = "Wednesday";
+                    case "Wednesday" -> nextDay = "Thursday";
+                    case "Thursday" -> nextDay = "Friday";
+                    case "Friday" -> nextDay = "Saturday";
+                    case "Saturday" -> nextDay = "Sunday";
+                    case "Sunday" -> nextDay = "Monday";
+                }
+
+                // If the toTime is on the next day, create two panes
+                // First pane: fromTime to the end of the day (6:45 AM)
+                ScheduleBlockPane eveningPane = new ScheduleBlockPane(day, fromTime, "6:45 AM", description, color, true, fromTime, toTime);
+                eveningPane.addScheduleBlockPane();
+
+                // Second pane: from the start of the next day (7:00 AM) to toTime
+                ScheduleBlockPane morningPane = new ScheduleBlockPane(nextDay, "7:00 AM", toTime, description, color, true, fromTime, toTime);
+                morningPane.addScheduleBlockPane();
+            } else {
+                // Create a single pane for the schedule block
+                ScheduleBlockPane scheduleBlockPane = new ScheduleBlockPane(day, fromTime, toTime, description, color, false, fromTime, toTime);
+                scheduleBlockPane.addScheduleBlockPane();
+            }
+
+        }
+
+
+
+        private int getHour(String time) {
+            // Extract the hour part from the time string
+            return Integer.parseInt(time.split(":")[0]);
+        }
+
+        private int getMinute(String time) {
+            // Extract the minute part from the time string
+            return Integer.parseInt(time.split(":")[1].split(" ")[0]);
+        }
+
+        private String getAmPm(String time) {
+            // Extract the AM/PM part from the time string
+            return time.split(" ")[1];
+        }
+
+
+
+
         private void setupDeleteButton() {
             deleteButton = new Button("X");
             deleteButton.setLayoutX(75);
@@ -308,11 +477,12 @@ public class mainpageController {
         }
 
         private void setupEditButton() {
-            editButton = new Button("Edit");
-            editButton.setLayoutX(62);
-            editButton.setLayoutY(deleteButton.getLayoutY() + deleteButton.getPrefHeight() + 25);
+            editButton = new Button("Edit Descr");
+            editButton.setPrefSize(100, 20); // Adjust the size as needed
+            editButton.setLayoutX(0); // 5 pixels from the left edge
+            editButton.setLayoutY(this.getPrefHeight() + editButton.getPrefHeight());
             editButton.setOnAction(e -> handleEdit());
-            editButton.setStyle("-fx-background-color: " + color + "; -fx-text-fill: black;");  // Same color as the pane
+            editButton.setStyle("-fx-background-color: " + color + "; -fx-text-fill: Black; -fx-font-size: 10px;-fx-border-width: 1; +  // Set the border width to 1px;\"-fx-border-insets: -10;\" ");  // Same color as the pane
         }
 
         private void calculatePosition(String day, String fromTime, String toTime, String description, String color) {
